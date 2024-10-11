@@ -1,7 +1,7 @@
 """
 Программа реализует симплекс-метод для решения задач линейного программирования.
-Содержит функции для проверки входных данных, создания симплекс-таблицы, 
-поиска разрешающего элемента, выполнения итераций симплекс-метода и вывода 
+Содержит функции для проверки входных данных, создания симплекс-таблицы,
+поиска разрешающего элемента, выполнения итераций симплекс-метода и вывода
 результатов на экран.
 
 Функции:
@@ -29,7 +29,7 @@ def check_simplex_table(c, A, b):
     # и содержат допустимые значения
     for row in A:
         if len(row) != len_A:
-            return False        # Длина строки не соответствует ожидаемой
+            return False  # Длина строки не соответствует ожидаемой
 
         # for num in row:
         #     if num < 0:
@@ -51,11 +51,11 @@ def check_simplex_response(c, A, b):
         return False  # Все коэффициенты равны нулю
 
     for row in range(len(b)):
-        if b[row] < 0:                      # Если есть отрицательный элемент в b
-            for col in range(len(A[0])):    # Ошибка в исходном коде: A должен быть матрицей
+        if b[row] < 0:  # Если есть отрицательный элемент в b
+            for col in range(len(A[0])):  # Ошибка в исходном коде: A должен быть матрицей
                 if A[row][col] < 0:
-                    return True     # Существуют отрицательные коэффициенты
-            return False            # Нет подходящих коэффициентов
+                    return True  # Существуют отрицательные коэффициенты
+            return False  # Нет подходящих коэффициентов
 
     return True
 
@@ -134,7 +134,7 @@ def find_min_ratio(A, b, min_ratio_col):
     for row in range(len(A)):
         if A[row][min_ratio_col] == 0:
             continue
-        
+
         ratio = b[row] / A[row][min_ratio_col]
 
         # Обновляем минимальное отношение, если нашли новое
@@ -176,7 +176,7 @@ def simplex_table_iteration(c, A, b, f, simplex_resolve):
     new_f : float
         Обновленное значение целевой функции.
     """
-    
+
     # Получаем значение разрешающего элемента
     new_simplex_resolve = 1 / simplex_resolve[0]
 
@@ -186,9 +186,9 @@ def simplex_table_iteration(c, A, b, f, simplex_resolve):
 
     # Заполняем колонну A
     for i in range(len(A)):
-        if i == simplex_resolve[1]: # Текущая строка разрешающего элемента
+        if i == simplex_resolve[1]:  # Текущая строка разрешающего элемента
             new_A[i][simplex_resolve[2]] = new_simplex_resolve
-        else:                       # Остальные строки
+        else:  # Остальные строки
             new_A[i][simplex_resolve[2]] = A[i][simplex_resolve[2]] / simplex_resolve[0] * -1
 
     # Обновляем коэффициенты целевой функции для разрешающего столбца
@@ -225,10 +225,12 @@ def simplex_table_iteration(c, A, b, f, simplex_resolve):
     # Обновляем значение целевой функции
     new_f = f - ((c[simplex_resolve[2]] * b[simplex_resolve[1]]) / simplex_resolve[0])
 
-    if new_f <= f:
-        return new_c, new_A, new_b, new_f
-    
-    raise ValueError("[ ! ] Не получается улучшить симплекс-таблицу")
+    #####################################################################
+    # if new_f <= f:                                                    #
+    #     return new_c, new_A, new_b, new_f                             #
+    # raise ValueError("[ ! ] Не получается улучшить симплекс-таблицу") #
+    #####################################################################
+    return new_c, new_A, new_b, new_f
 
 
 def simplexsus(minimize, c, A, b, f):
@@ -245,15 +247,15 @@ def simplexsus(minimize, c, A, b, f):
             for i in range(len(c)):
                 c[i] *= -1
 
-        while max(c) > 0:
-        ######################
-        #i = 0               # 
-        #while i < 4:        #
-        ######################
-            simplex_table = create_simplex_table(c, A, b, f)    # Создание симплекс-таблицы
-            print_simplex_table(simplex_table)                  # Вывод симплекс-таблицы
+        while (max(c) > 0) or (min(b) < 0):
+            ######################
+            # i = 0              #
+            # while i < 4:       #
+            ######################
+            simplex_table = create_simplex_table(c, A, b, f)  # Создание симплекс-таблицы
+            print_simplex_table(simplex_table)  # Вывод симплекс-таблицы
 
-            simplex_resolve = find_simplex_resolve(c, A, b)     # Поиск и выбор разрешающего элемента
+            simplex_resolve = find_simplex_resolve(c, A, b)  # Поиск и выбор разрешающего элемента
 
             # Обработка результатов нахождения разрешающего элемента
             if simplex_resolve == ["not"]:
@@ -266,15 +268,15 @@ def simplexsus(minimize, c, A, b, f):
             print("[ * ] The resolving element is found:", simplex_resolve)
 
             c, A, b, f = simplex_table_iteration(c, A, b, f, simplex_resolve)
-            
+
             ##########
-            #i +=1   #
+            # i +=1  #
             ##########
 
         # Найдено оптимальное решение
         print("\n[ + ] OPTI ANS")
-        simplex_table = create_simplex_table(c, A, b, f)    # Создание симплекс-таблицы
-        print_simplex_table(simplex_table)                  # Вывод симплекс-таблицы
+        simplex_table = create_simplex_table(c, A, b, f)  # Создание симплекс-таблицы
+        print_simplex_table(simplex_table)  # Вывод симплекс-таблицы
 
     else:
         print("[ - ] Check: BAD")

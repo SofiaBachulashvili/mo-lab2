@@ -78,10 +78,15 @@ def create_simplex_table(c, A, b, f):
 
 def print_simplex_table(simplex_table):
     """
-    Выводит матрицу в терминал.
+    Выводит симплекс-таблицу в терминал с заголовками.
     """
     # Определяем максимальную ширину для форматирования
     max_width = max(len(str(float(j))) for row in simplex_table for j in row) + 2
+
+    # Выводим заголовки
+    headers = ["b"] + [f"x{i+1}" for i in range(len(simplex_table[0]) - 1)]
+    print(" | ".join(f"{header:>{max_width}}" for header in headers))
+    print("-" * (max_width * len(headers) + 3 * (len(headers) - 1)))
 
     for i in range(len(simplex_table)):
         for j in simplex_table[i]:
@@ -231,6 +236,25 @@ def simplex_table_iteration(c, A, b, f, simplex_resolve):
     # raise ValueError("[ ! ] Не получается улучшить симплекс-таблицу") #
     #####################################################################
     return new_c, new_A, new_b, new_f
+
+
+def to_dual_task(c, A, b, minimize):
+    """
+    Преобразует заданные параметры для двойственной задачи линейного программирования.
+    """
+    new_c = b.copy()
+    new_b = [-x for x in c]
+
+    # Создаем новую матрицу A для двойственной задачи
+    # Размерность new_A: количество столбцов A x количество строк A
+    new_A = [[0 for _ in range(len(A))] for _ in range(len(A[0]))]
+
+    # Заполняем новую матрицу A, транспонируя оригинальную матрицу A
+    for row in range(len(A)):
+        for col in range(len(A[0])):
+            new_A[col][row] = A[row][col] * -1
+
+    return new_c, new_A, new_b, not minimize
 
 
 def simplexsus(minimize, c, A, b, f):
